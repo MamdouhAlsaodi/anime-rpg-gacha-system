@@ -150,27 +150,80 @@ public class GamePanel extends JPanel implements ActionListener {
         Stage stage = Stage.createStage(currentStageNum);
         g.setColor(stage.getBgColor()); g.fillRect(0, 0, getWidth(), getHeight());
 
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("SansSerif", Font.BOLD, 36));
-        String title = "Stage " + currentStageNum;
-        g.drawString(title, getWidth()/2 - g.getFontMetrics().stringWidth(title)/2, 150);
+        // Dark readable overlay
+        g.setColor(new Color(0, 0, 0, 95));
+        g.fillRoundRect(48, 28, getWidth() - 96, getHeight() - 56, 28, 28);
+        g.setColor(new Color(201, 168, 76));
+        g.setStroke(new BasicStroke(2f));
+        g.drawRoundRect(48, 28, getWidth() - 96, getHeight() - 56, 28, 28);
 
-        g.setFont(new Font("SansSerif", Font.BOLD, 24));
-        g.drawString(stage.getName(), getWidth()/2 - g.getFontMetrics().stringWidth(stage.getName())/2, 200);
+        g.setColor(new Color(201, 168, 76));
+        g.setFont(new Font("SansSerif", Font.BOLD, 34));
+        String title = "Stage " + currentStageNum + " Preview";
+        g.drawString(title, getWidth()/2 - g.getFontMetrics().stringWidth(title)/2, 82);
+
+        g.setFont(new Font("SansSerif", Font.BOLD, 23));
+        g.setColor(Color.WHITE);
+        g.drawString(stage.getName(), getWidth()/2 - g.getFontMetrics().stringWidth(stage.getName())/2, 116);
+
+        drawStageTeaser(g, stage, 115, 140, getWidth() - 230, 190);
 
         g.setFont(new Font("SansSerif", Font.PLAIN, 16));
         g.setColor(Color.LIGHT_GRAY);
-        g.drawString("Waves: " + stage.getTotalWaves() + "  |  Enemies: " + stage.getEnemiesPerWave() + "/wave", 260, 260);
-        g.drawString("Enemy HP: " + stage.getEnemyBaseHP() + "  |  Reward: " + stage.getRewardGems() + " Gems", 260, 285);
+        g.drawString("Waves: " + stage.getTotalWaves() + "  |  Enemies: " + stage.getEnemiesPerWave() + "/wave", 230, 365);
+        g.drawString("Enemy HP: " + stage.getEnemyBaseHP() + "  |  Reward: " + stage.getRewardGems() + " Gems", 230, 390);
         if (stage.hasBoss()) {
-            g.setColor(Color.YELLOW);
-            g.drawString("BOSS BATTLE!", 340, 315);
+            g.setColor(new Color(255, 215, 0));
+            g.setFont(new Font("SansSerif", Font.BOLD, 16));
+            g.drawString("BOSS BATTLE AHEAD!", 455, 378);
         }
 
         g.setColor(Color.YELLOW);
         g.setFont(new Font("SansSerif", Font.BOLD, 18));
-        String press = "Press ENTER to start";
-        g.drawString(press, getWidth()/2 - g.getFontMetrics().stringWidth(press)/2, 400);
+        String press = "Press ENTER to start the stage";
+        g.drawString(press, getWidth()/2 - g.getFontMetrics().stringWidth(press)/2, 445);
+    }
+
+    private void drawStageTeaser(Graphics2D g, Stage stage, int x, int y, int w, int h) {
+        int oldGround = groundY;
+        groundY = y + h - 55;
+
+        g.setColor(new Color(0, 0, 0, 130));
+        g.fillRoundRect(x - 6, y - 6, w + 12, h + 12, 20, 20);
+        g.setColor(stage.getBgColor());
+        g.fillRoundRect(x, y, w, h, 18, 18);
+        g.setClip(x, y, w, h);
+
+        g.setColor(stage.getGroundColor());
+        g.fillRect(x, groundY + 24, w, h - 24);
+        drawDecorations(g, stage);
+        drawMiniHero(g, x + 80, groundY + 24);
+        drawMiniEnemy(g, x + w - 130, groundY + 24, stage.hasBoss());
+
+        g.setClip(null);
+        g.setColor(new Color(255, 255, 255, 100));
+        g.drawRoundRect(x, y, w, h, 18, 18);
+        groundY = oldGround;
+    }
+
+    private void drawMiniHero(Graphics2D g, int x, int feetY) {
+        g.setColor(new Color(85, 190, 255));
+        g.fillOval(x, feetY - 58, 30, 30);
+        g.setColor(new Color(60, 120, 230));
+        g.fillRoundRect(x + 5, feetY - 30, 20, 30, 8, 8);
+        g.setColor(new Color(255, 215, 0));
+        g.setStroke(new BasicStroke(3f));
+        g.drawLine(x + 28, feetY - 24, x + 60, feetY - 43);
+    }
+
+    private void drawMiniEnemy(Graphics2D g, int x, int feetY, boolean boss) {
+        g.setColor(boss ? new Color(180, 40, 160) : new Color(230, 70, 55));
+        g.fillOval(x, feetY - (boss ? 72 : 52), boss ? 58 : 38, boss ? 58 : 38);
+        g.setColor(Color.WHITE);
+        g.fillOval(x + 12, feetY - (boss ? 50 : 35), 7, 7);
+        g.fillOval(x + (boss ? 36 : 24), feetY - (boss ? 50 : 35), 7, 7);
+        g.setColor(new Color(0, 0, 0, 130));
+        g.drawLine(x + 12, feetY - 18, x + (boss ? 46 : 30), feetY - 18);
     }
 
     private void drawGame(Graphics2D g) {

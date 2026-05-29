@@ -200,9 +200,8 @@ public class MainScreen extends JFrame {
         });
         gameFrame.setVisible(true);
 
-        // Start stage 1
-        gp.startStage(1);
-        gp.requestFocus();
+        // Show the Stage 1 teaser first. The player starts by pressing ENTER.
+        gp.requestFocusInWindow();
     }
 
     public GemBar getGemBar() { return gemBar; }
