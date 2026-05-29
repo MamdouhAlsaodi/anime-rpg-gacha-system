@@ -153,9 +153,56 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:#e0e0e0;overflo
 </div>
 </div>
 
-<!-- SLIDE 5: Personagens -->
-<div class="slide">
-<h2>👥 Personagens do Jogo (30 Total)</h2>
+  <!-- SLIDE 5: Gameplay System -->
+  <div class="slide">
+    <h2>🎮 Sistema de Jogabilidade (Game Loop)</h2>
+    <div class="arch-box animate-item" style="max-width:820px;padding:24px 30px">
+      <div style="display:flex;align-items:center;gap:12px;margin:6px 0;flex-wrap:wrap;justify-content:center">
+        <div style="background:var(--dark2);padding:10px 18px;border-radius:10px;border:1px solid var(--gold);font-weight:700;font-size:1em">👤 Login do Jogador</div>
+        <span style="color:var(--gold);font-size:1.3em">→</span>
+        <div style="background:var(--dark2);padding:10px 18px;border-radius:10px;border:1px solid var(--blue);font-weight:700;font-size:1em">💎 Coletar Gems</div>
+        <span style="color:var(--gold);font-size:1.3em">→</span>
+        <div style="background:var(--dark2);padding:10px 18px;border-radius:10px;border:1px solid var(--purple);font-weight:700;font-size:1em">🎰 Puxada Gacha</div>
+        <span style="color:var(--gold);font-size:1.3em">→</span>
+        <div style="background:var(--dark2);padding:10px 18px;border-radius:10px;border:1px solid var(--green);font-weight:700;font-size:1em">📦 Receber Item</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap;justify-content:center">
+        <div style="background:var(--dark2);padding:10px 18px;border-radius:10px;border:1px solid var(--legendary);font-weight:700;font-size:1em">⬆️ Subir Nível</div>
+        <span style="color:var(--gold);font-size:1.3em">→</span>
+        <div style="background:var(--dark2);padding:10px 18px;border-radius:10px;border:1px solid #ab47bc;font-weight:700;font-size:1em">🔄 Dupe → Constelação</div>
+        <span style="color:var(--gold);font-size:1.3em">→</span>
+        <div style="background:var(--dark2);padding:10px 18px;border-radius:10px;border:1px solid var(--red);font-weight:700;font-size:1em">⚔️ Melhorar Equip</div>
+      </div>
+    </div>
+    <div class="two-col animate-item" style="margin-top:20px">
+      <div class="col">
+        <h3>🎰 Sistema de Invocação</h3>
+        <div style="text-align:left;line-height:2.2;font-size:.95em">
+          <div>💎 <b>Puxada Única</b> = 160 Gems</div>
+          <div>💎 <b>Puxada ×10</b> = 1.600 Gems</div>
+          <div>⭐ <b>Soft Pity</b> = aumenta após 70 puxadas (+6%/puxada)</div>
+          <div>🌟 <b>Hard Pity</b> = Lendário garantido a cada 90 puxadas</div>
+          <div>🎯 <b>Taxas de Drop:</b></div>
+          <div style="padding-left:20px">Lendário 0,6% | Raro 5,1% | Comum 94,3%</div>
+        </div>
+      </div>
+      <div class="col">
+        <h3>⚔️ Sistema de Progressão</h3>
+        <div style="text-align:left;line-height:2.2;font-size:.95em">
+          <div>⬆️ <b>Level Up</b> — aumentar nível dos personagens</div>
+          <div>🔧 <b>Melhorar</b> — aprimorar armas e artefatos</div>
+          <div>🔄 <b>Constelação</b> — duplicatas = melhorias</div>
+          <div style="padding-left:20px">C0 → C1 → C2 → ... → C7+</div>
+          <div>📊 <b>ProgressionSystem</b> gerencia todas as melhorias</div>
+          <div>📋 <b>Inventário</b> = 200 espaços (30 personagens + 170 itens)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Characters -->
+  <div class="slide">
+    <h2>👥 Personagens do Jogo (30 Total)</h2>
 <div class="char-grid">
 <div class="char-badge hero animate-item">⚔️ Kaelith<div class="char-role">Hero</div></div>
 <div class="char-badge hero animate-item">⚔️ Zephyr<div class="char-role">Hero</div></div>
