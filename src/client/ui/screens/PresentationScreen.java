@@ -42,6 +42,21 @@ public class PresentationScreen extends JPanel {
         updateSlide();
     }
 
+    @Override
+    public void doLayout() {
+        super.doLayout();
+        layoutChildrenRecursively(this);
+    }
+
+    private static void layoutChildrenRecursively(Container container) {
+        for (Component child : container.getComponents()) {
+            if (child instanceof Container childContainer) {
+                childContainer.doLayout();
+                layoutChildrenRecursively(childContainer);
+            }
+        }
+    }
+
     private JPanel createNavPanel() {
         JPanel navPanel = new JPanel(new BorderLayout(12, 0));
         navPanel.setBackground(new Color(15, 15, 25));
