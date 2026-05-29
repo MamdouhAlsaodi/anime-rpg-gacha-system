@@ -120,13 +120,13 @@ public class GameEngine {
             } catch (DuplicateCharacterException e) {
                 handleDuplicateCharacter(c);
             } catch (InventoryFullException e) {
-                System.out.println("  [!] Inventory full - " + c.getName() + " discarded");
+                // GUI mode still shows the pull result card; avoid scary console spam.
             }
         } else if (obj instanceof InventoryItem item) {
             try {
                 inventory.addItem(item);
             } catch (InventoryFullException e) {
-                System.out.println("  [!] Inventory full - " + item.getName() + " discarded");
+                // GUI mode still shows the pull result card; avoid scary console spam.
             }
         }
     }
@@ -135,7 +135,6 @@ public class GameEngine {
         for (Character existing : inventory.getAllCharacters()) {
             if (existing.getName().equals(newChar.getName()) && existing instanceof Hero hero) {
                 String result = constellationSystem.processDuplicate(inventory, hero, newChar);
-                System.out.println("  >> " + result);
                 constellationUpgrades++;
                 resourceSystem.onConstellation();
                 resourceSystem.checkAndUnlockAchievement("First Constellation", constellationUpgrades >= 1);

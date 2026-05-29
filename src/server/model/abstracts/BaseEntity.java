@@ -14,6 +14,11 @@ public abstract class BaseEntity {
 
     public abstract String describeYourself();
 
+    @Override
+    public String toString() {
+        return describeYourself();
+    }
+
     public String getId() { return id; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

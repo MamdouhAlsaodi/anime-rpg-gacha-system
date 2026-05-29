@@ -2,6 +2,8 @@ package client.ui.screens;
 
 import api.protocol.GameResponse;
 import client.network.ServerConnector;
+import client.ui.components.CharacterCard;
+import client.ui.components.ItemCard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +24,10 @@ public class SummonScreen extends JPanel {
         title.setForeground(new Color(201, 168, 76));
         add(title, BorderLayout.NORTH);
 
+        JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
+        contentPanel.setBackground(new Color(10, 10, 15));
+        add(contentPanel, BorderLayout.CENTER);
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
         buttonPanel.setBackground(new Color(10, 10, 15));
 
@@ -30,19 +36,25 @@ public class SummonScreen extends JPanel {
 
         buttonPanel.add(summonOne);
         buttonPanel.add(summonTenBtn);
-        add(buttonPanel, BorderLayout.CENTER);
+        contentPanel.add(buttonPanel, BorderLayout.NORTH);
 
         JPanel resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
         resultsPanel.setBackground(new Color(10, 10, 15));
+        resultsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel hint = new JLabel("Pull characters, weapons, artifacts, and relics here.", SwingConstants.CENTER);
+        hint.setAlignmentX(Component.LEFT_ALIGNMENT);
+        hint.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        hint.setForeground(new Color(136, 136, 136));
+        resultsPanel.add(hint);
 
         JScrollPane scrollPane = new JScrollPane(resultsPanel);
         scrollPane.setBackground(new Color(10, 10, 15));
         scrollPane.getViewport().setBackground(new Color(10, 10, 15));
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(30, 30, 45)));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setPreferredSize(new Dimension(750, 300));
-        add(scrollPane, BorderLayout.SOUTH);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
 
         summonOne.addActionListener(e -> performSummon(1, resultsPanel));
         summonTenBtn.addActionListener(e -> performSummon(10, resultsPanel));
@@ -52,13 +64,30 @@ public class SummonScreen extends JPanel {
         GameResponse response = count == 1 ? connector.summonSingle() : connector.summonTen();
         if (response.isSuccess()) {
             resultsPanel.removeAll();
+            JLabel banner = new JLabel(count == 1 ? "Summon Result" : "Summon x10 Results", SwingConstants.CENTER);
+            banner.setAlignmentX(Component.LEFT_ALIGNMENT);
+            banner.setFont(new Font("Segoe UI", Font.BOLD, 18));
+            banner.setForeground(new Color(201, 168, 76));
+            resultsPanel.add(banner);
+
             if (response.getData() instanceof List<?> results) {
+                JPanel cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
+                cardsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                cardsPanel.setBackground(new Color(10, 10, 15));
                 for (Object obj : results) {
-                    JLabel label = new JLabel("  " + obj.toString());
-                    label.setForeground(Color.WHITE);
-                    label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                    resultsPanel.add(label);
+                    if (obj instanceof server.model.abstracts.Character character) {
+                        cardsPanel.add(new CharacterCard(character));
+                    } else if (obj instanceof server.model.abstracts.InventoryItem item) {
+                        cardsPanel.add(new ItemCard(item));
+                    } else {
+                        cardsPanel.add(createFallbackResult(obj));
+                    }
                 }
+                resultsPanel.add(cardsPanel);
+            } else if (response.getData() != null) {
+                resultsPanel.add(createFallbackResult(response.getData()));
+            } else {
+                resultsPanel.add(createFallbackResult(response.getMessage()));
             }
             resultsPanel.revalidate();
             resultsPanel.repaint();
@@ -66,6 +95,14 @@ public class SummonScreen extends JPanel {
         } else {
             JOptionPane.showMessageDialog(this, response.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private JComponent createFallbackResult(Object obj) {
+        JLabel label = new JLabel("  " + String.valueOf(obj));
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        return label;
     }
 
     private JButton createSummonButton(String text, String subtitle) {

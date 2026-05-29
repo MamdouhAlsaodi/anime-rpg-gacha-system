@@ -25,7 +25,7 @@ public class CharacterCard extends JPanel {
         nameLabel.setForeground(Color.WHITE);
         add(nameLabel, BorderLayout.NORTH);
 
-        JPanel centerPanel = new JPanel(new GridLayout(2, 1));
+        JPanel centerPanel = new JPanel(new GridLayout(5, 1));
         centerPanel.setBackground(bgColor);
         JLabel elementLabel = new JLabel(character.getElement().getDisplayName(), SwingConstants.CENTER);
         elementLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -33,8 +33,20 @@ public class CharacterCard extends JPanel {
         JLabel levelLabel = new JLabel("Lv." + character.getLevel(), SwingConstants.CENTER);
         levelLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         levelLabel.setForeground(Color.LIGHT_GRAY);
+        JLabel hpLabel = new JLabel("HP " + character.getHp(), SwingConstants.CENTER);
+        hpLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        hpLabel.setForeground(Color.LIGHT_GRAY);
+        JLabel atkLabel = new JLabel("ATK " + character.getAttack(), SwingConstants.CENTER);
+        atkLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        atkLabel.setForeground(Color.LIGHT_GRAY);
+        JLabel defLabel = new JLabel("DEF " + character.getDefense(), SwingConstants.CENTER);
+        defLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        defLabel.setForeground(Color.LIGHT_GRAY);
         centerPanel.add(elementLabel);
         centerPanel.add(levelLabel);
+        centerPanel.add(hpLabel);
+        centerPanel.add(atkLabel);
+        centerPanel.add(defLabel);
         add(centerPanel, BorderLayout.CENTER);
 
         StarPanel starPanel = new StarPanel(character.getRarity());

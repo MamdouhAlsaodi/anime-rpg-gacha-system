@@ -7,5 +7,9 @@ cd "$(dirname "$0")"
 # unless Java is told it is running under a non-reparenting window manager.
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+# When launched remotely over SSH the display variables are often missing.
+# Local terminals already provide DISPLAY, so this only fills the Arch default.
+export DISPLAY="${DISPLAY:-:1}"
+
 # Disable XRender pipeline on this setup; it avoids blank/late Swing repaints.
 exec java -Dsun.java2d.xrender=false -cp out client.GachaClientApp
