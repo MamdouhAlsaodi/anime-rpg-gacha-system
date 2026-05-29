@@ -49,10 +49,10 @@ public class MainScreen extends JFrame {
         gemBar = new GemBar(playerGems);
         topBar.add(gemBar, BorderLayout.EAST);
 
-        // Navigation tabs - 5 tabs now
-        JPanel navBar = new JPanel(new GridLayout(1, 5));
+        // Navigation tabs - full-width equal tabs
+        String[] tabs = {"Summon", "Inventory", "Missions", "Upgrade", "Play Game", "Presentation"};
+        JPanel navBar = new JPanel(new GridLayout(1, tabs.length));
         navBar.setBackground(new Color(15, 15, 25));
-        String[] tabs = {"Summon", "Inventory", "Player Stats", "Play Game", "Presentation"};
         for (String tab : tabs) {
             JButton btn = new JButton(tab);
             btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -84,36 +84,8 @@ public class MainScreen extends JFrame {
 
         cardPanel.add(new SummonScreen(connector, refreshGems), "Summon");
         cardPanel.add(new InventoryScreen(connector), "Inventory");
-
-        // Player stats panel
-        JPanel playerPanel = new JPanel(new BorderLayout());
-        playerPanel.setBackground(new Color(10, 10, 15));
-        JLabel playerLabel = new JLabel("Player Stats - " + playerName, SwingConstants.CENTER);
-        playerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        playerLabel.setForeground(new Color(201, 168, 76));
-        playerPanel.add(playerLabel, BorderLayout.NORTH);
-
-        JTextArea statsArea = new JTextArea();
-        statsArea.setBackground(new Color(20, 20, 30));
-        statsArea.setForeground(Color.WHITE);
-        statsArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
-        statsArea.setEditable(false);
-        if (connector.isOfflineMode()) {
-            statsArea.setText(connector.getOfflineEngine().getStats());
-        }
-        playerPanel.add(new JScrollPane(statsArea), BorderLayout.CENTER);
-
-        JButton refreshStats = new JButton("Refresh Stats");
-        refreshStats.setBackground(new Color(201, 168, 76));
-        refreshStats.setForeground(Color.BLACK);
-        refreshStats.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        refreshStats.addActionListener(e -> {
-            if (connector.isOfflineMode()) {
-                statsArea.setText(connector.getOfflineEngine().getStats());
-            }
-        });
-        playerPanel.add(refreshStats, BorderLayout.SOUTH);
-        cardPanel.add(playerPanel, "Player Stats");
+        cardPanel.add(new MissionsScreen(connector, refreshGems), "Missions");
+        cardPanel.add(new UpgradeScreen(connector, refreshGems), "Upgrade");
 
         // Game placeholder card
         JPanel gameCard = new JPanel(new BorderLayout());

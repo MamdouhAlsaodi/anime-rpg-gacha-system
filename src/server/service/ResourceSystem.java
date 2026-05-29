@@ -143,9 +143,11 @@ public class ResourceSystem {
 
         int reward = calculateDailyReward(loginStreak);
         player.addGems(reward);
+        player.addCommonCurrency(80);
+        player.addRareCurrency(8);
         completeMissionProgress("first_login", 1);
 
-        String msg = String.format("Day %d Login: +%,d Gems! (Streak: %d days)%s",
+        String msg = String.format("Day %d Login: +%,d Gems, +80 C, +8 R! (Streak: %d days)%s",
             totalDaysPlayed, reward, loginStreak,
             loginStreak % 7 == 0 ? " BONUS WEEK!" : "");
         rewardHistory.add("[Daily] " + msg);
@@ -170,7 +172,9 @@ public class ResourceSystem {
                 m.completed = true;
                 missionsCompleted++;
                 player.addGems(m.reward);
-                String msg = String.format("Mission: %s -> +%,d Gems!", m.name, m.reward);
+                player.addCommonCurrency(25);
+                if (m.completed && m.reward >= 120) player.addRareCurrency(3);
+                String msg = String.format("Mission: %s -> +%,d Gems, +25 C%s!", m.name, m.reward, m.reward >= 120 ? ", +3 R" : "");
                 rewardHistory.add("[Mission] " + msg);
                 checkAllMissionsBonus();
             }
@@ -244,7 +248,9 @@ public class ResourceSystem {
             default           -> { return "Unknown quest type."; }
         }
         player.addGems(reward);
-        String msg = String.format("Quest [%s]: +%,d Gems!", desc, reward);
+        player.addCommonCurrency(reward / 20);
+        player.addRareCurrency(Math.max(5, reward / 500));
+        String msg = String.format("Quest [%s]: +%,d Gems, +%d C, +%d R!", desc, reward, reward / 20, Math.max(5, reward / 500));
         rewardHistory.add("[Quest] " + msg);
         return msg;
     }
@@ -278,6 +284,7 @@ public class ResourceSystem {
     public int getAchievementsUnlocked() { return achievementsUnlocked; }
     public List<String> getRewardHistory() { return rewardHistory; }
     public Map<String, Boolean> getAchievements() { return achievements; }
+    public Map<String, Mission> getDailyMissions() { return Collections.unmodifiableMap(dailyMissions); }
 
     public String getDailyMissionsDisplay() {
         StringBuilder sb = new StringBuilder();
@@ -299,7 +306,7 @@ public class ResourceSystem {
     public String getResourceSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("======= RESOURCES =======\n");
-        sb.append(String.format("Gems: %,d\n", player.getGems()));
+        sb.append(String.format("Gems: %,d | C: %,d | R: %,d\n", player.getGems(), player.getCommonCurrency(), player.getRareCurrency()));
         sb.append(String.format("Login Streak: %d days (Day %d overall)\n", loginStreak, totalDaysPlayed));
         sb.append(String.format("Today Pulls: %d (L:%d R:%d C:%d)\n",
             todayPulls, todayLegendaryPulls, todayRarePulls, todayCommonPulls));
