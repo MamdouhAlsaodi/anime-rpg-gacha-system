@@ -14,8 +14,13 @@ public class MainScreen extends JFrame {
 
     public MainScreen(ServerConnector connector) {
         this.connector = connector;
-        setTitle("Anime RPG Gacha System");
-        setSize(800, 600);
+        String playerName = connector.isOfflineMode() ?
+            connector.getOfflineEngine().getPlayer().getName() : "Player";
+        int playerGems = connector.isOfflineMode() ?
+            connector.getOfflineEngine().getPlayer().getGems() : 10000;
+
+        setTitle("Anime RPG Gacha System - " + playerName);
+        setSize(850, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(new Color(10, 10, 15));
@@ -25,15 +30,15 @@ public class MainScreen extends JFrame {
         topBar.setBackground(new Color(20, 20, 30));
         topBar.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(201, 168, 76)));
 
-        JLabel titleLabel = new JLabel("  Anime RPG Gacha System");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        JLabel titleLabel = new JLabel("  " + playerName + " | Anime RPG Gacha");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         titleLabel.setForeground(new Color(201, 168, 76));
         topBar.add(titleLabel, BorderLayout.WEST);
 
-        gemBar = new GemBar(connector.isOfflineMode() ? connector.getOfflineEngine().getPlayer().getGems() : 10000);
+        gemBar = new GemBar(playerGems);
         topBar.add(gemBar, BorderLayout.EAST);
 
-        // Navigation
+        // Navigation tabs
         JPanel navBar = new JPanel(new GridLayout(1, 4));
         navBar.setBackground(new Color(15, 15, 25));
         String[] tabs = {"Summon", "Inventory", "Player Stats", "Presentation"};
@@ -66,25 +71,28 @@ public class MainScreen extends JFrame {
         // Player stats panel
         JPanel playerPanel = new JPanel(new BorderLayout());
         playerPanel.setBackground(new Color(10, 10, 15));
-        JLabel playerLabel = new JLabel("Player Stats", SwingConstants.CENTER);
+        JLabel playerLabel = new JLabel("Player Stats - " + playerName, SwingConstants.CENTER);
         playerLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         playerLabel.setForeground(new Color(201, 168, 76));
         playerPanel.add(playerLabel, BorderLayout.NORTH);
+
         JTextArea statsArea = new JTextArea();
         statsArea.setBackground(new Color(20, 20, 30));
         statsArea.setForeground(Color.WHITE);
-        statsArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        statsArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        statsArea.setEditable(false);
         if (connector.isOfflineMode()) {
-            statsArea.setText(connector.getOfflineEngine().getPlayer().toString());
+            statsArea.setText(connector.getOfflineEngine().getStats());
         }
         playerPanel.add(new JScrollPane(statsArea), BorderLayout.CENTER);
-        JButton refreshStats = new JButton("Refresh");
+
+        JButton refreshStats = new JButton("Refresh Stats");
         refreshStats.setBackground(new Color(201, 168, 76));
         refreshStats.setForeground(Color.BLACK);
+        refreshStats.setFont(new Font("Segoe UI", Font.BOLD, 14));
         refreshStats.addActionListener(e -> {
             if (connector.isOfflineMode()) {
-                statsArea.setText(connector.getOfflineEngine().getPlayer().toString() +
-                    "\n\n" + connector.getOfflineEngine().getInventoryManager().getInventorySummary(connector.getOfflineEngine().getInventory()));
+                statsArea.setText(connector.getOfflineEngine().getStats());
             }
         });
         playerPanel.add(refreshStats, BorderLayout.SOUTH);
@@ -99,7 +107,7 @@ public class MainScreen extends JFrame {
         add(cardPanel, BorderLayout.CENTER);
 
         // Status bar
-        JLabel status = new JLabel(" " + (connector.isOfflineMode() ? "Offline Mode" : "Connected to server"));
+        JLabel status = new JLabel(" " + (connector.isOfflineMode() ? "Offline Mode | " + playerName : "Connected to server"));
         status.setForeground(new Color(136, 136, 136));
         status.setBackground(new Color(10, 10, 15));
         add(status, BorderLayout.SOUTH);
