@@ -136,6 +136,8 @@ public class MainScreen extends JFrame {
         status.setForeground(new Color(136, 136, 136));
         status.setBackground(new Color(10, 10, 15));
         add(status, BorderLayout.SOUTH);
+
+        setVisible(true);
     }
 
     private void openGameWindow() {
