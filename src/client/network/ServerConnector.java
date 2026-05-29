@@ -25,6 +25,12 @@ public class ServerConnector {
         this.offlineMode = false;
     }
 
+    public ServerConnector(String username) {
+        this.connected = false;
+        this.offlineMode = false;
+        enableOfflineMode(username);
+    }
+
     public void connect(String host, int port) {
         this.host = host;
         this.port = port;
@@ -43,11 +49,16 @@ public class ServerConnector {
     }
 
     public void enableOfflineMode() {
+        enableOfflineMode("Player");
+    }
+
+    public void enableOfflineMode(String username) {
         this.offlineMode = true;
-        this.offlineEngine = new GameEngine();
+        int startingGems = username.equalsIgnoreCase("mamdouh") ? 999999 : 10000;
+        this.offlineEngine = new GameEngine(username, startingGems);
         this.offlineRouter = new CommandRouter();
         this.connected = true;
-        System.out.println("Offline mode enabled. Using local GameEngine.");
+        System.out.println("Offline mode enabled. Using local GameEngine for " + username + ".");
     }
 
     public GameResponse sendRequest(GameRequest request) {
