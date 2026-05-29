@@ -37,6 +37,9 @@ public class SummonScreen extends JPanel {
         resultsPanel.setBackground(new Color(10, 10, 15));
 
         JScrollPane scrollPane = new JScrollPane(resultsPanel);
+        scrollPane.setBackground(new Color(10, 10, 15));
+        scrollPane.getViewport().setBackground(new Color(10, 10, 15));
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(30, 30, 45)));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setPreferredSize(new Dimension(750, 300));
         add(scrollPane, BorderLayout.SOUTH);

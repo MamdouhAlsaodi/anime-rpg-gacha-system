@@ -127,16 +127,23 @@ public class MainScreen extends JFrame {
         cardPanel.add(new PresentationScreen(), "Presentation");
 
         // Layout
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(new Color(15, 15, 25));
+        header.add(topBar, BorderLayout.NORTH);
+        header.add(navBar, BorderLayout.SOUTH);
+
         setLayout(new BorderLayout());
-        add(topBar, BorderLayout.NORTH);
-        add(navBar, BorderLayout.BEFORE_FIRST_LINE);
+        add(header, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
 
         JLabel status = new JLabel(" " + (connector.isOfflineMode() ? "Offline Mode | " + playerName : "Connected to server"));
         status.setForeground(new Color(136, 136, 136));
         status.setBackground(new Color(10, 10, 15));
+        status.setOpaque(true);
         add(status, BorderLayout.SOUTH);
 
+        revalidate();
+        repaint();
         setVisible(true);
     }
 

@@ -14,10 +14,13 @@ public class InventoryScreen extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBackground(new Color(10, 10, 15));
 
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(new Color(10, 10, 15));
+
         JLabel title = new JLabel("Inventory", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI", Font.BOLD, 24));
         title.setForeground(new Color(201, 168, 76));
-        add(title, BorderLayout.NORTH);
+        headerPanel.add(title, BorderLayout.NORTH);
 
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         filterPanel.setBackground(new Color(15, 15, 25));
@@ -29,12 +32,16 @@ public class InventoryScreen extends JPanel {
             btn.setFocusPainted(false);
             filterPanel.add(btn);
         }
-        add(filterPanel, BorderLayout.BEFORE_FIRST_LINE);
+        headerPanel.add(filterPanel, BorderLayout.SOUTH);
+        add(headerPanel, BorderLayout.NORTH);
 
         JPanel contentPanel = new JPanel(new GridLayout(0, 4, 10, 10));
         contentPanel.setBackground(new Color(10, 10, 15));
 
         JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setBackground(new Color(10, 10, 15));
+        scrollPane.getViewport().setBackground(new Color(10, 10, 15));
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(30, 30, 45)));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         add(scrollPane, BorderLayout.CENTER);
 
