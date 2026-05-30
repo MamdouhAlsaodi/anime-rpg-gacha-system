@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.util.List;
 import server.model.abstracts.Character;
 import server.model.abstracts.InventoryItem;
+import server.model.items.Artifact;
 import server.model.enums.Rarity;
 
 public class PlayerEntity {
@@ -15,9 +16,11 @@ public class PlayerEntity {
     private int hp, maxHP;
     private int baseAttack;
     private int weaponBonus;
+    private int artifactBonus;
     private int defense;
     private Rarity charRarity;
     private String weaponName;
+    private String artifactName;
     private boolean attacking;
     private int attackTimer;
     private int invincible;
@@ -27,6 +30,10 @@ public class PlayerEntity {
     private int damageFlash;
 
     public PlayerEntity(Character character, InventoryItem weapon) {
+        this(character, weapon, null);
+    }
+
+    public PlayerEntity(Character character, InventoryItem weapon, Artifact artifact) {
         this.charName = character.getName();
         this.charRarity = character.getRarity();
         this.baseAttack = character.getLevel() / 2 + 5;
@@ -34,10 +41,19 @@ public class PlayerEntity {
         this.hp = 100 + character.getLevel() * 5;
         this.maxHP = hp;
         this.weaponBonus = 0;
+        this.artifactBonus = 0;
         this.weaponName = "Fists";
+        this.artifactName = "No Artifact";
         if (weapon != null) {
             this.weaponName = weapon.getName();
             this.weaponBonus = weapon.getLevel() * 3 + (weapon.getRarity() == Rarity.LEGENDARY ? 20 : weapon.getRarity() == Rarity.RARE ? 10 : 3);
+        }
+        if (artifact != null) {
+            this.artifactName = artifact.getName();
+            this.artifactBonus = artifact.getStatBonus();
+            this.maxHP += artifactBonus * 2;
+            this.hp = maxHP;
+            this.defense += Math.max(1, artifactBonus / 5);
         }
         this.attacking = false;
         this.attackTimer = 0;
@@ -62,7 +78,7 @@ public class PlayerEntity {
         if (!attacking) { attacking = true; attackTimer = 12; }
     }
 
-    public int getTotalAttack() { return baseAttack + weaponBonus; }
+    public int getTotalAttack() { return baseAttack + weaponBonus + Math.max(0, artifactBonus / 2); }
 
     public Rectangle getAttackBounds() {
         int aw = 40; int ah = 30;
@@ -128,6 +144,10 @@ public class PlayerEntity {
         g.drawString(charName, x - charName.length() * 3, y - height/2 - 26);
         g.setColor(Color.GRAY);
         g.drawString(weaponName, x - weaponName.length() * 3, y + height/2 + 14);
+        if (!"No Artifact".equals(artifactName)) {
+            g.setColor(new Color(201, 168, 76));
+            g.drawString("Art: " + artifactName, x - Math.min(artifactName.length() * 3, 45), y + height/2 + 28);
+        }
     }
 
     public Rectangle getBounds() { return new Rectangle(x - width/2, y - height/2, width, height); }

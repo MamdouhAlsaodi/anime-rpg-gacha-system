@@ -4,6 +4,7 @@ import server.model.game2d.*;
 import server.model.abstracts.Character;
 import server.model.abstracts.InventoryItem;
 import server.model.enums.Rarity;
+import server.model.items.Artifact;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +28,7 @@ public class GamePanel extends JPanel implements ActionListener {
     private String selectedWeapon;
     private Character gameCharacter;
     private InventoryItem gameWeapon;
+    private Artifact gameArtifact;
     private int totalGemsEarned;
     private int totalKills;
 
@@ -37,9 +39,14 @@ public class GamePanel extends JPanel implements ActionListener {
     private enum GameState { STAGE_INTRO, PLAYING, WAVE_CLEAR, STAGE_COMPLETE, GAME_OVER, VICTORY }
 
     public GamePanel(JFrame frame, Character character, InventoryItem weapon) {
+        this(frame, character, weapon, null);
+    }
+
+    public GamePanel(JFrame frame, Character character, InventoryItem weapon, Artifact artifact) {
         this.parentFrame = frame;
         this.gameCharacter = character;
         this.gameWeapon = weapon;
+        this.gameArtifact = artifact;
         this.currentStageNum = 1;
         this.totalGemsEarned = 0;
         this.totalKills = 0;
@@ -65,7 +72,7 @@ public class GamePanel extends JPanel implements ActionListener {
     public void startStage(int stageNum) {
         this.currentStageNum = stageNum;
         Stage stage = Stage.createStage(stageNum);
-        player = new PlayerEntity(gameCharacter, gameWeapon);
+        player = new PlayerEntity(gameCharacter, gameWeapon, gameArtifact);
         player.setX(100); player.setY(groundY);
         combat = new CombatEngine(player, stage);
         state = GameState.PLAYING;

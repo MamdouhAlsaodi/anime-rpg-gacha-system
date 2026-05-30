@@ -25,6 +25,7 @@ public class GameEngine {
     private ConstellationSystem constellationSystem;
     private ProgressionSystem progressionSystem;
     private ResourceSystem resourceSystem;
+    private LoadoutManager loadoutManager;
     private CharacterFactory characterFactory;
     private WeaponFactory weaponFactory;
     private ArtifactFactory artifactFactory;
@@ -42,6 +43,7 @@ public class GameEngine {
         this.constellationSystem = new ConstellationSystem();
         this.progressionSystem = new ProgressionSystem();
         this.resourceSystem = new ResourceSystem(player);
+        this.loadoutManager = new LoadoutManager(inventory);
         this.characterFactory = new CharacterFactory();
         this.weaponFactory = new WeaponFactory();
         this.artifactFactory = new ArtifactFactory();
@@ -56,6 +58,7 @@ public class GameEngine {
         this();
         this.player = new Player(playerName, startingGems);
         this.resourceSystem = new ResourceSystem(this.player);
+        this.loadoutManager = new LoadoutManager(this.inventory);
     }
 
     public List<Object> performSummon(int count) throws InsufficientGemsException {
@@ -175,6 +178,7 @@ public class GameEngine {
     public ConstellationSystem getConstellationSystem() { return constellationSystem; }
     public ProgressionSystem getProgressionSystem() { return progressionSystem; }
     public ResourceSystem getResourceSystem() { return resourceSystem; }
+    public LoadoutManager getLoadoutManager() { return loadoutManager; }
     public int getLegendaryCount() { return legendaryCount; }
     public int getRareCount() { return rareCount; }
     public int getCommonCount() { return commonCount; }

@@ -6,6 +6,8 @@ import client.ui.components.GemBar;
 import server.model.abstracts.Character;
 import server.model.abstracts.InventoryItem;
 import server.model.enums.Rarity;
+import server.model.items.Artifact;
+import server.model.items.Weapon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -120,53 +122,90 @@ public class MainScreen extends JFrame {
     }
 
     private void openGameWindow() {
-        // Pick character
-        List<Character> chars = new ArrayList<>(connector.getOfflineEngine().getInventory().getAllCharacters());
-        List<InventoryItem> items = new ArrayList<>(connector.getOfflineEngine().getInventory().getAllItems());
+        var engine = connector.getOfflineEngine();
+        List<Character> chars = new ArrayList<>(engine.getInventory().getAllCharacters());
+        List<InventoryItem> items = new ArrayList<>(engine.getInventory().getAllItems());
 
         if (chars.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No characters! Summon first!");
             return;
         }
 
-        // Character selection
+        Character selectedChar = engine.getLoadoutManager().getActiveCharacter();
+        if (selectedChar == null) {
+            selectedChar = chooseCharacter(chars);
+            if (selectedChar == null) return;
+            engine.getLoadoutManager().setActiveCharacter(selectedChar.getId());
+        }
+
+        Weapon selectedWeapon = engine.getLoadoutManager().getWeaponFor(selectedChar);
+        Artifact selectedArtifact = engine.getLoadoutManager().getArtifactFor(selectedChar);
+
+        if (selectedWeapon == null && selectedArtifact == null) {
+            int choice = JOptionPane.showConfirmDialog(this,
+                selectedChar.getName() + " has no saved weapon/artifact yet. Choose and save now?",
+                "No Saved Loadout", JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                LoadoutChoice loadout = chooseAndSaveLoadout(selectedChar, items);
+                if (loadout == null) return;
+                selectedWeapon = loadout.weapon;
+                selectedArtifact = loadout.artifact;
+            }
+        }
+
+        launchAdventure(selectedChar, selectedWeapon, selectedArtifact);
+    }
+
+    private Character chooseCharacter(List<Character> chars) {
         String[] charNames = chars.stream().map(c ->
             c.getName() + " [" + c.getRarity() + "] Lv" + c.getLevel()
         ).toArray(String[]::new);
-
         JComboBox<String> charBox = new JComboBox<>(charNames);
+        int result = JOptionPane.showConfirmDialog(this, charBox,
+            "Choose Character", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        return result == JOptionPane.OK_OPTION ? chars.get(charBox.getSelectedIndex()) : null;
+    }
 
-        // Weapon selection
-        String[] weaponNames = new String[items.size() + 1];
-        weaponNames[0] = "No Weapon (Fists)";
-        for (int i = 0; i < items.size(); i++) {
-            weaponNames[i + 1] = items.get(i).getName() + " [" + items.get(i).getRarity() + "]";
+    private LoadoutChoice chooseAndSaveLoadout(Character selectedChar, List<InventoryItem> items) {
+        List<Weapon> weapons = new ArrayList<>();
+        List<Artifact> artifacts = new ArrayList<>();
+        for (InventoryItem item : items) {
+            if (item instanceof Weapon w) weapons.add(w);
+            if (item instanceof Artifact a) artifacts.add(a);
         }
-        JComboBox<String> weaponBox = new JComboBox<>(weaponNames);
+
+        JComboBox<String> weaponBox = new JComboBox<>();
+        weaponBox.addItem("No Weapon");
+        for (Weapon w : weapons) weaponBox.addItem(w.getName() + " [" + w.getRarity() + "] Lv" + w.getLevel());
+
+        JComboBox<String> artifactBox = new JComboBox<>();
+        artifactBox.addItem("No Artifact");
+        for (Artifact a : artifacts) artifactBox.addItem(a.getName() + " [" + a.getRarity() + "] Lv" + a.getLevel());
 
         JPanel selPanel = new JPanel(new GridLayout(4, 1, 5, 5));
         selPanel.setBackground(new Color(20, 20, 30));
-        JLabel cl = new JLabel("Choose Character:"); cl.setForeground(Color.WHITE);
-        JLabel wl = new JLabel("Choose Weapon:"); wl.setForeground(Color.WHITE);
-        selPanel.add(cl); selPanel.add(charBox);
+        JLabel wl = new JLabel("Weapon for " + selectedChar.getName() + ":"); wl.setForeground(Color.WHITE);
+        JLabel al = new JLabel("Artifact for " + selectedChar.getName() + ":"); al.setForeground(Color.WHITE);
         selPanel.add(wl); selPanel.add(weaponBox);
+        selPanel.add(al); selPanel.add(artifactBox);
 
         int result = JOptionPane.showConfirmDialog(this, selPanel,
-            "Select Your Loadout", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            "Save Loadout", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result != JOptionPane.OK_OPTION) return null;
 
-        if (result != JOptionPane.OK_OPTION) return;
+        Weapon weapon = weaponBox.getSelectedIndex() > 0 ? weapons.get(weaponBox.getSelectedIndex() - 1) : null;
+        Artifact artifact = artifactBox.getSelectedIndex() > 0 ? artifacts.get(artifactBox.getSelectedIndex() - 1) : null;
+        connector.getOfflineEngine().getLoadoutManager().saveLoadout(selectedChar, weapon, artifact);
+        return new LoadoutChoice(weapon, artifact);
+    }
 
-        Character selectedChar = chars.get(charBox.getSelectedIndex());
-        InventoryItem selectedWeapon = weaponBox.getSelectedIndex() > 0 ?
-            items.get(weaponBox.getSelectedIndex() - 1) : null;
-
-        // Open game window
-        JFrame gameFrame = new JFrame("Anime RPG - 2D Adventure");
+    private void launchAdventure(Character selectedChar, Weapon selectedWeapon, Artifact selectedArtifact) {
+        JFrame gameFrame = new JFrame("Anime RPG - 2D Adventure | " + selectedChar.getName());
         gameFrame.setSize(820, 540);
         gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gameFrame.setLocationRelativeTo(this);
 
-        GamePanel gp = new GamePanel(gameFrame, selectedChar, selectedWeapon);
+        GamePanel gp = new GamePanel(gameFrame, selectedChar, selectedWeapon, selectedArtifact);
         gameFrame.add(gp);
         gameFrame.addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
@@ -180,9 +219,16 @@ public class MainScreen extends JFrame {
             }
         });
         gameFrame.setVisible(true);
-
-        // Show the Stage 1 teaser first. The player starts by pressing ENTER.
         gp.requestFocusInWindow();
+    }
+
+    private static class LoadoutChoice {
+        final Weapon weapon;
+        final Artifact artifact;
+        LoadoutChoice(Weapon weapon, Artifact artifact) {
+            this.weapon = weapon;
+            this.artifact = artifact;
+        }
     }
 
     public GemBar getGemBar() { return gemBar; }
