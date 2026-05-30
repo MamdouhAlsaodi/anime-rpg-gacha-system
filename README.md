@@ -4,30 +4,115 @@
 
 ---
 
+
+## 🌐 Available in Three Languages
+
+This project is prepared for classmates and reviewers in **three languages**:
+- 🇸🇦 **Arabic (العربية)** — [README-ar.md](README-ar.md)
+- 🇧🇷 **Portuguese (Português)** — [README-pt.md](README-pt.md)
+- 🇬🇧 **English** — this README file
+
+> The code stays in English for Java conventions, while the documentation summary and presentation handoff are available in Arabic, Portuguese, and English.
+
+---
+
 ## 🏗️ Architecture Overview
+
+The project follows a **strict 3-layer architecture** so the game is easy to explain, test, and extend.
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│           CLIENT LAYER (Swing UI)                   │
-│  Screens + Components + Animations + User Events    │
+│           CLIENT / PRESENTATION LAYER               │
+│  Swing Screens + Components + Animations + Events   │
 └──────────────────┬──────────────────────────────────┘
                    │ TCP Socket (localhost:8080)
-                   │ Serializable Objects
+                   │ Serializable GameRequest objects
 ┌──────────────────▼──────────────────────────────────┐
 │           API / PROTOCOL LAYER                      │
-│  Request | Response | CommandHandler | Router       │
+│  CommandCode | GameRequest | GameResponse | Router  │
 └──────────────────┬──────────────────────────────────┘
-                   │ Method Calls
+                   │ Validated method calls
 ┌──────────────────▼──────────────────────────────────┐
 │           SERVER / BUSINESS LAYER                   │
-│  GameEngine | Services | Models | Factory | Exceptions│
+│  GameEngine | Services | Models | Factories | Rules │
 └─────────────────────────────────────────────────────┘
 ```
 
-**3-Layer Architecture** — strict separation of concerns:
-- **Server Layer**: Business logic, models, factories, game engine
-- **API Layer**: Protocol definitions, command handlers, request routing
-- **Client Layer**: Swing UI, network connector, animations
+### Why this structure?
+
+- **Client Layer = presentation only**: Swing screens display the game, collect user actions, and show animations. They do not own the gacha rules.
+- **API Layer = clean contract**: `GameRequest`, `GameResponse`, `CommandCode`, handlers, and `CommandRouter` define exactly how the client talks to the game engine.
+- **Server Layer = business truth**: `GameEngine`, services, models, factories, and exceptions keep the rules in one place: gems, pity, inventory, upgrades, missions, and rewards.
+
+This design gives the project:
+- **Separation of concerns** — UI, protocol, and business logic are not mixed.
+- **Testability** — the server/game engine can be tested from `Main.java` without opening Swing.
+- **Extensibility** — a new UI, command, item type, or game mode can be added without rewriting everything.
+- **Good OOP demonstration** — abstractions, inheritance, polymorphism, encapsulation, factories, and exceptions are visible in the structure.
+
+---
+
+## 🔌 API & Protocol Documentation
+
+The API layer is an internal Java socket protocol. The client sends a serializable `GameRequest`; the server routes it; then the server returns a serializable `GameResponse`.
+
+### Command Codes
+
+| Command | Gem Cost | Purpose |
+|---------|----------|---------|
+| `SUMMON_SINGLE` | 160 | Perform one gacha pull. |
+| `SUMMON_TEN` | 1600 | Perform ten pulls with pity/rarity logic. |
+| `VIEW_INVENTORY` | 0 | Return owned characters and items. |
+| `VIEW_PLAYER` | 0 | Return player profile, gems, pity, and stats. |
+| `LEVEL_UP` | 0 | Level up a character through the inventory service. |
+| `ENHANCE_ITEM` | 0 | Enhance an owned weapon/artifact/relic. |
+| `HELP` | 0 | Return available commands. |
+| `EXIT` | 0 | Disconnect from the server. |
+
+### Request Object
+
+`GameRequest` contains:
+- `CommandCode command` — the action to execute.
+- `Map<String, Object> params` — optional command parameters.
+- `String requestId` — UUID used to match response to request.
+
+### Response Object
+
+`GameResponse` contains:
+- `boolean success` — whether the command succeeded.
+- `String message` — user-friendly result or error.
+- `Object data` — returned payload, such as inventory, player stats, or summon results.
+- `String requestId` — echoed from the request by the router.
+- `LocalDateTime timestamp` — response creation time.
+
+### Router + Handlers Flow
+
+```
+Client UI
+  │
+  ├── creates GameRequest(CommandCode.SUMMON_TEN)
+  │
+  ▼
+ServerConnector / TCP socket
+  │
+  ▼
+GachaGameServer
+  │
+  ▼
+CommandRouter
+  │
+  ├── SummonHandler      → SUMMON_SINGLE, SUMMON_TEN
+  ├── InventoryHandler   → VIEW_INVENTORY, LEVEL_UP, ENHANCE_ITEM
+  └── PlayerHandler      → VIEW_PLAYER
+  │
+  ▼
+GameEngine + services
+  │
+  ▼
+GameResponse(success, message, data)
+```
+
+The router makes the API easy to extend: to add a new feature, create a new `CommandCode`, add a handler method, and route it without changing the whole client.
 
 ---
 
@@ -175,6 +260,27 @@ src/
 
 ---
 
+## 📺 Presentation / Report Layer Quality
+
+The project includes a polished in-app presentation screen (`PresentationScreen.java`) designed for a classroom demo, not only a basic menu.
+
+### What the presentation layer shows
+
+- **Hero introduction** — explains the project as a Java Swing RPG + gacha + 2D adventure.
+- **Updated feature report** — summon, inventory, progression, resources, adventure mode, and presentation.
+- **3-layer architecture slide** — visually separates Client, API, and Server layers.
+- **Gameplay loop slide** — explains why the player collects characters and items: summon → loadout → fight → earn → upgrade.
+- **Five-stage teaser** — forest, desert, cave, volcano, and castle previews drawn with `Graphics2D`.
+- **OOP highlights** — abstraction, inheritance, polymorphism, and encapsulation.
+- **Gacha/resource explanation** — rates, pity, rewards, daily missions, quests, and achievements.
+- **Demo path** — clear order for showing the project to classmates/professor.
+
+### Why this improves the report layer
+
+Instead of explaining the architecture only in text, the project can now **show** its structure and gameplay loop inside the application. This makes the final presentation stronger because the reviewer can see the design decisions, UI polish, and OOP concepts while running the program.
+
+---
+
 ## 🚀 How to Run
 
 ### Prerequisites
@@ -183,7 +289,8 @@ src/
 
 ### 1. Compile
 ```bash
-javac -d out src/**/*.java
+find src -name "*.java" > sources.txt
+javac -d out @sources.txt
 ```
 
 ### 2. Start Server
