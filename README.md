@@ -102,8 +102,8 @@ GachaGameServer
 CommandRouter
   │
   ├── SummonHandler      → SUMMON_SINGLE, SUMMON_TEN
-  ├── InventoryHandler   → VIEW_INVENTORY, LEVEL_UP, ENHANCE_ITEM
-  └── PlayerHandler      → VIEW_PLAYER
+  ├── InventoryHandler   → VIEW_INVENTORY
+  └── PlayerHandler      → VIEW_PLAYER, LEVEL_UP, ENHANCE_ITEM
   │
   ▼
 GameEngine + services
