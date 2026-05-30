@@ -81,7 +81,16 @@ Client UI → GameRequest → ServerConnector → GachaGameServer → CommandRou
 ```bash
 find src -name "*.java" > sources.txt
 javac -d out @sources.txt
-java -cp out Main
+```
+
+### Contas de demonstração
+
+```bash
+# Conta normal: começa com gems padrão
+printf 'player1\n' | java -cp out Main
+
+# Conta VIP: possui muitas gems para teste e apresentação
+printf 'mamdouh\n' | java -cp out Main
 ```
 
 Para abrir a interface:
@@ -90,6 +99,11 @@ Para abrir a interface:
 java -cp out server.GachaGameServer
 java -cp out client.GachaClientApp
 ```
+
+Quando a janela de nome aparecer:
+
+- Use `player1` para a conta normal.
+- Use `mamdouh` para a conta VIP com muitas gems.
 
 ---
 

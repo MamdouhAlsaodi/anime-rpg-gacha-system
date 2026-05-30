@@ -81,7 +81,16 @@ Client UI → GameRequest → ServerConnector → GachaGameServer → CommandRou
 ```bash
 find src -name "*.java" > sources.txt
 javac -d out @sources.txt
-java -cp out Main
+```
+
+### حسابات التجربة
+
+```bash
+# حساب عادي: يبدأ بجواهر عادية
+printf 'player1\n' | java -cp out Main
+
+# حساب VIP: فيه جواهر كثيرة للتجربة والعرض
+printf 'mamdouh\n' | java -cp out Main
 ```
 
 لتشغيل الواجهة:
@@ -90,6 +99,11 @@ java -cp out Main
 java -cp out server.GachaGameServer
 java -cp out client.GachaClientApp
 ```
+
+عند ظهور نافذة الاسم في الواجهة:
+
+- اكتب `player1` لتجربة حساب عادي.
+- اكتب `mamdouh` لتجربة حساب فيه جواهر كثيرة.
 
 ---
 

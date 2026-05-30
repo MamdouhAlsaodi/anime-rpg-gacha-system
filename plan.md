@@ -125,7 +125,16 @@ The project is now easier to demo because it explains itself visually, has a cle
 ```bash
 find src -name "*.java" > sources.txt
 javac -d out @sources.txt
-java -cp out Main
+```
+
+Demo accounts:
+
+```bash
+# Normal account
+printf 'player1\n' | java -cp out Main
+
+# VIP rich-gems account
+printf 'mamdouh\n' | java -cp out Main
 ```
 
 For GUI demo:
@@ -134,6 +143,11 @@ For GUI demo:
 java -cp out server.GachaGameServer
 java -cp out client.GachaClientApp
 ```
+
+In the username dialog:
+
+- `player1` = normal account.
+- `mamdouh` = VIP account with many gems.
 
 ---
 

@@ -303,10 +303,20 @@ java -cp out server.GachaGameServer
 java -cp out client.GachaClientApp
 ```
 
-### 4. Run Tests
+### 4. Run Tests / Demo Accounts
 ```bash
-java -cp out Main
+# Normal account: starts with standard gems
+printf 'player1\n' | java -cp out Main
+
+# VIP rich-gems account: gets 999,999 gems for full demo/testing
+printf 'mamdouh\n' | java -cp out Main
 ```
+
+### 5. GUI Demo Accounts
+
+When the Swing username dialog opens, use one of these names:
+- `player1` — normal account with standard starting gems.
+- `mamdouh` — VIP demo account with many gems for stress testing, summons, and presentation.
 
 ---
 
