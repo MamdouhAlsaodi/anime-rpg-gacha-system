@@ -173,6 +173,12 @@ public class GameEngine {
 
     public Inventory getInventory() { return inventory; }
     public Player getPlayer() { return player; }
+
+    public void setPlayer(Player player) {
+        if (player == null) return;
+        this.player = player;
+        this.resourceSystem = new ResourceSystem(this.player);
+    }
     public GachaSystem getGachaSystem() { return gachaSystem; }
     public InventoryManager getInventoryManager() { return inventoryManager; }
     public ConstellationSystem getConstellationSystem() { return constellationSystem; }

@@ -4,6 +4,8 @@ import api.protocol.GameRequest;
 import api.protocol.GameResponse;
 import api.router.CommandRouter;
 import server.engine.GameEngine;
+import server.model.player.Player;
+import server.persistence.LocalGameDatabase;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -13,12 +15,36 @@ public class GachaGameServer {
     private static final int PORT = 8080;
     private GameEngine engine;
     private CommandRouter router;
+    private LocalGameDatabase database;
     private boolean running;
 
     public GachaGameServer() {
         this.engine = new GameEngine();
         this.router = new CommandRouter();
+        this.database = new LocalGameDatabase();
+        loadDefaultPlayer();
         this.running = true;
+    }
+
+    private void loadDefaultPlayer() {
+        try {
+            database.initialize();
+            Player savedPlayer = database.loadPlayer(engine.getPlayer().getName()).orElse(null);
+            if (savedPlayer != null) {
+                engine.setPlayer(savedPlayer);
+                System.out.println("Loaded local player data: " + savedPlayer.getName());
+            }
+        } catch (Exception e) {
+            System.err.println("Could not load local player data: " + e.getMessage());
+        }
+    }
+
+    private void saveDefaultPlayer() {
+        try {
+            database.savePlayer(engine.getPlayer());
+        } catch (IOException e) {
+            System.err.println("Could not save local player data: " + e.getMessage());
+        }
     }
 
     public void start() {
@@ -53,6 +79,7 @@ public class GachaGameServer {
                     Object obj = in.readObject();
                     if (obj instanceof GameRequest request) {
                         GameResponse response = router.route(request, engine);
+                        saveDefaultPlayer();
                         out.writeObject(response);
                         out.flush();
                         System.out.println("Handled: " + request.getCommand() + " -> " + response);
@@ -72,6 +99,7 @@ public class GachaGameServer {
     }
 
     public void stop() {
+        saveDefaultPlayer();
         running = false;
     }
 
