@@ -409,4 +409,4 @@ This project is for educational and portfolio purposes.
 
 ---
 
-> Built with ❤️ by **Mamdouh Alsaudi** — Computer Science Student
+> Built with ❤️ by **Mamdouh Alsaudi,Eberson Alessandro, Matheus Nunes** — Computer Science Student
